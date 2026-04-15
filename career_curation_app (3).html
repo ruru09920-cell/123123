@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>AI 커리어 큐레이션</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=DM+Serif+Display:ital@0;1&display=swap');
+:root{
+  --navy:#0F2040;--navy2:#1A3A6B;--navy3:#2452A0;
+  --blue:#3B6DC4;--sky:#6B9FDE;--ice:#B8D0F0;--pale:#E8F0FC;
+  --gold:#C8A84B;--gold-lt:#F5EDD0;
+  --white:#FFFFFF;--gray:#64748B;--light:#94A3B8;--dark:#1E293B;
+  --border:#D1DCF0;--bg:#F0F4FB;--green:#16A34A;--green-lt:#F0FDF4;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--dark);min-height:100vh;overflow-x:hidden}
+.hd{background:var(--navy);padding:11px 16px;position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:10px}
+.hd-logo{font-family:'DM Serif Display',serif;font-size:17px;color:var(--white)}
+.hd-logo span{color:var(--gold)}
+.hd-sub{font-size:9px;color:var(--sky);margin-top:1px}
+.hd-step{margin-left:auto;font-size:11px;font-weight:700;color:rgba(255,255,255,.55);background:rgba(255,255,255,.1);padding:3px 10px;border-radius:20px}
+.tabs{display:flex;overflow-x:auto;scrollbar-width:none;background:var(--white);border-bottom:2px solid var(--border)}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex-shrink:0;padding:9px 11px;border:none;background:transparent;font-size:11px;font-weight:700;color:var(--light);cursor:pointer;font-family:inherit;transition:all .15s;border-bottom:3px solid transparent;margin-bottom:-2px}
+.tab.active{color:var(--navy2);border-bottom-color:var(--gold)}
+.tab.done{color:var(--blue)}
+.tab.done::after{content:' ✓';font-size:9px}
+.sec{display:none;padding:16px 16px 96px;animation:fd .2s ease}
+.sec.on{display:block}
+@keyframes fd{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:15px;margin-bottom:12px}
+.sec-title{font-size:19px;font-weight:900;color:var(--navy2);margin-bottom:4px}
+.sec-sub{font-size:12px;color:var(--gray);margin-bottom:14px;line-height:1.6}
+.guide{background:var(--pale);border:1px solid var(--ice);border-left:3px solid var(--navy2);border-radius:10px;padding:11px 14px;margin-bottom:14px;font-size:12px;color:var(--navy2);line-height:1.7}
+.guide b{color:var(--navy3)}
+.gold-guide{background:var(--gold-lt);border:1px solid var(--gold);border-left:3px solid var(--gold);border-radius:10px;padding:11px 14px;margin-bottom:14px;font-size:12px;color:#7A5E1A;line-height:1.7}
+input[type=text],input[type=number],textarea{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:9px;font-size:13px;font-family:inherit;color:var(--dark);background:var(--white);outline:none;transition:border-color .18s;resize:none}
+input:focus,textarea:focus{border-color:var(--navy2)}
+.lbl{font-size:11px;font-weight:700;color:var(--navy2);margin-bottom:5px;display:block}
+.ig{margin-bottom:12px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.code-display{display:flex;align-items:center;gap:12px;padding:16px;margin:12px 0;background:linear-gradient(135deg,var(--navy),var(--navy2),var(--navy3));border-radius:14px;position:relative;overflow:hidden}
+.code-display::after{content:'';position:absolute;top:-20px;right:-20px;width:100px;height:100px;border-radius:50%;background:rgba(200,168,75,.15)}
+.code-badge{width:52px;height:52px;border-radius:11px;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900;color:var(--white);font-family:'DM Serif Display',serif}
+.code-combined{font-size:24px;font-weight:900;color:var(--white);letter-spacing:3px;font-family:'DM Serif Display',serif}
+.code-name-small{font-size:10px;color:rgba(255,255,255,.5);margin-top:3px}
+.riasec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:12px}
+.rs-box{background:var(--pale);border:1.5px solid var(--ice);border-radius:10px;padding:9px 5px;text-align:center}
+.rs-code{font-size:15px;font-weight:900;color:var(--navy2);margin-bottom:2px}
+.rs-name{font-size:8px;color:var(--gray);margin-bottom:5px}
+.rs-input{width:100%;padding:5px;border:1.5px solid var(--ice);border-radius:7px;font-size:14px;font-weight:700;text-align:center;font-family:inherit;color:var(--dark);background:var(--white);outline:none}
+.rs-input:focus{border-color:var(--navy2)}
+.radar-wrap{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:12px;text-align:center;display:none}
+.mat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-bottom:12px}
+@media(min-width:420px){.mat-grid{grid-template-columns:repeat(3,1fr)}}
+.mat-item{background:var(--pale);border:1px solid var(--ice);border-radius:10px;padding:9px 6px;text-align:center}
+.mat-name{font-size:10px;font-weight:700;color:var(--navy2);margin-bottom:2px;line-height:1.3}
+.mat-sub{font-size:8px;color:var(--light);margin-bottom:5px}
+.mat-input{width:100%;padding:5px;border:1.5px solid var(--ice);border-radius:7px;font-size:14px;font-weight:700;text-align:center;font-family:inherit;color:var(--dark);background:var(--white);outline:none}
+.mat-input:focus{border-color:var(--navy2)}
+.mat-lv{font-size:9px;margin-top:3px;font-weight:700;min-height:13px}
+.mat-bars{display:flex;flex-direction:column;gap:7px;margin-bottom:8px}
+.bar-row{display:flex;align-items:center;gap:7px}
+.bar-lbl{font-size:10px;color:var(--navy2);font-weight:700;min-width:56px;line-height:1.3}
+.bar-track{flex:1;height:18px;background:var(--pale);border-radius:5px;overflow:hidden}
+.bar-fill{height:100%;border-radius:5px;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;transition:width .5s ease}
+.bar-val{font-size:10px;font-weight:700;color:var(--white)}
+.bar-num{font-size:10px;color:var(--gray);min-width:28px;text-align:right}
+.dec-card{background:var(--white);border:1.5px solid var(--border);border-radius:11px;padding:13px;cursor:pointer;transition:all .18s;margin-bottom:7px}
+.dec-card.sel{border-color:var(--gold);background:var(--gold-lt)}
+.dec-title{font-size:13px;font-weight:700;color:var(--navy2);margin-bottom:4px}
+.dec-desc{font-size:11px;color:var(--gray);line-height:1.5}
+.dec-kw{font-size:10px;color:var(--gold);font-weight:700;margin-top:5px;display:none}
+.dec-card.sel .dec-kw{display:block}
+
+/* ── 토너먼트 ── */
+.trn-header{text-align:center;margin-bottom:16px}
+.trn-round{font-size:13px;font-weight:700;color:var(--gold);margin-bottom:4px}
+.trn-progress{display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:8px}
+.trn-dot{width:10px;height:10px;border-radius:50%;background:var(--ice);transition:all .3s}
+.trn-dot.done{background:var(--navy2)}
+.trn-dot.cur{background:var(--gold);transform:scale(1.3)}
+.trn-vs{display:flex;align-items:stretch;gap:0;margin-bottom:12px;border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(15,32,64,.12)}
+.trn-card{flex:1;background:var(--white);padding:20px 14px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;text-align:center;border:none;font-family:inherit;position:relative;overflow:hidden}
+.trn-card::before{content:'';position:absolute;bottom:0;left:0;right:0;height:4px;background:var(--ice);transition:height .2s}
+.trn-card:active::before,.trn-card:hover::before{height:100%;opacity:.07;background:var(--navy2)}
+.trn-card.winner{background:linear-gradient(135deg,var(--navy),var(--navy2));animation:pop .3s ease}
+@keyframes pop{0%{transform:scale(.95)}50%{transform:scale(1.03)}100%{transform:scale(1)}}
+.trn-emoji{font-size:44px;margin-bottom:10px;display:block}
+.trn-name{font-size:14px;font-weight:900;color:var(--navy2);margin-bottom:4px;line-height:1.3}
+.trn-card.winner .trn-name{color:var(--white)}
+.trn-type{font-size:10px;color:var(--light);margin-bottom:6px}
+.trn-card.winner .trn-type{color:rgba(255,255,255,.6)}
+.trn-desc{font-size:11px;color:var(--gray);line-height:1.5}
+.trn-card.winner .trn-desc{color:rgba(255,255,255,.75)}
+.trn-divider{width:2px;background:var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative}
+.trn-vs-badge{position:absolute;background:var(--white);border:2px solid var(--border);border-radius:20px;padding:6px 8px;font-size:12px;font-weight:900;color:var(--navy2);z-index:1;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.trn-skip{width:100%;padding:9px;border-radius:9px;border:1.5px solid var(--border);background:var(--white);font-size:12px;color:var(--light);font-family:inherit;cursor:pointer;margin-bottom:10px}
+.trn-result{text-align:center;padding:24px 16px;background:linear-gradient(135deg,var(--navy),var(--navy2));border-radius:18px;margin-bottom:16px;position:relative;overflow:hidden}
+.trn-result::after{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:rgba(200,168,75,.15)}
+.trn-winner-emoji{font-size:64px;display:block;margin-bottom:8px}
+.trn-winner-title{font-size:13px;color:rgba(255,255,255,.5);margin-bottom:4px}
+.trn-winner-name{font-size:22px;font-weight:900;color:var(--white);font-family:'DM Serif Display',serif;margin-bottom:4px}
+.trn-winner-type{font-size:12px;color:var(--sky);margin-bottom:12px}
+.trn-winner-story{font-size:11px;color:rgba(255,255,255,.7);line-height:1.7;padding:10px 12px;background:rgba(255,255,255,.08);border-radius:8px;border-left:2px solid var(--gold);text-align:left}
+.trn-history{margin-bottom:12px}
+.trn-hist-title{font-size:12px;font-weight:700;color:var(--navy2);margin-bottom:8px}
+.trn-hist-grid{display:flex;flex-wrap:wrap;gap:5px}
+.trn-hist-chip{font-size:11px;padding:3px 10px;border-radius:16px;background:var(--pale);border:1px solid var(--ice);color:var(--navy2)}
+.trn-hist-chip.win{background:var(--gold-lt);border-color:var(--gold);color:#7A5E1A;font-weight:700}
+.trn-mode-select{display:flex;gap:8px;margin-bottom:14px}
+.mode-btn{flex:1;padding:14px 8px;border-radius:12px;border:2px solid var(--border);background:var(--white);cursor:pointer;font-family:inherit;transition:all .18s;text-align:center}
+.mode-btn.sel{border-color:var(--gold);background:var(--gold-lt)}
+.mode-emoji{font-size:28px;display:block;margin-bottom:5px}
+.mode-name{font-size:13px;font-weight:700;color:var(--navy2)}
+.mode-desc{font-size:10px;color:var(--light);margin-top:2px}
+
+/* ── 직업 카드 (탐색모드) ── */
+.filter-bar{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;margin-bottom:12px}
+.filter-bar::-webkit-scrollbar{display:none}
+.f-btn{flex-shrink:0;padding:5px 12px;border-radius:18px;border:1.5px solid var(--border);background:var(--white);font-size:11px;font-weight:700;color:var(--gray);cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap}
+.f-btn.on{background:var(--navy2);border-color:var(--navy2);color:var(--white)}
+.job-item{background:var(--white);border:1.5px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:border-color .15s;margin-bottom:8px}
+.job-item.open{border-color:var(--navy2)}
+.job-item.starred{border-color:var(--gold)}
+.job-item.hidden{display:none}
+.job-head{display:flex;align-items:center;gap:10px;padding:12px 14px}
+.job-emoji{font-size:22px;flex-shrink:0}
+.job-info{flex:1;min-width:0}
+.job-name{font-size:13px;font-weight:700;color:var(--navy2)}
+.job-type{font-size:10px;color:var(--gray);margin-top:2px}
+.job-arrow{font-size:11px;color:var(--light);transition:transform .2s;flex-shrink:0}
+.job-item.open .job-arrow{transform:rotate(180deg)}
+.match-chip{font-size:10px;font-weight:700;padding:2px 7px;border-radius:7px;flex-shrink:0;display:none;background:var(--gold-lt);border:1px solid var(--gold);color:#7A5E1A}
+.match-chip.show{display:block}
+.job-body{display:none;padding:0 14px 14px;border-top:1px solid var(--border)}
+.job-item.open .job-body{display:block}
+.job-story{font-size:12px;color:var(--dark);line-height:1.7;padding:10px 12px;background:var(--pale);border-radius:9px;border-left:3px solid var(--gold);margin:10px 0}
+.ai-bar{display:flex;align-items:center;gap:7px;margin-bottom:8px}
+.ai-lbl{font-size:10px;color:var(--light);min-width:40px}
+.ai-track{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.ai-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--sky),var(--navy2))}
+.ai-pct{font-size:10px;color:var(--gray);min-width:28px;text-align:right}
+.skill-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.skill-tag{font-size:10px;padding:2px 8px;border-radius:8px;background:var(--pale);border:1px solid var(--ice);color:var(--navy2)}
+.star-btn{width:100%;padding:9px;border-radius:9px;border:1.5px solid var(--border);background:var(--white);font-size:12px;font-weight:700;color:var(--gray);font-family:inherit;cursor:pointer;transition:all .15s}
+.star-btn.on{background:var(--gold-lt);border-color:var(--gold);color:#7A5E1A}
+.star-sum{background:var(--gold-lt);border:1px solid var(--gold);border-radius:12px;padding:13px;margin-top:12px;display:none}
+.star-sum.show{display:block}
+.star-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+.s-chip{font-size:11px;padding:3px 10px;border-radius:16px;background:var(--white);border:1.5px solid var(--gold);color:#7A5E1A;font-weight:700}
+
+/* ── 가치관 ── */
+.value-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px}
+@media(min-width:480px){.value-grid{grid-template-columns:repeat(3,1fr)}}
+.val-card{background:var(--white);border:1.5px solid var(--border);border-radius:12px;padding:13px 10px;cursor:pointer;text-align:center;transition:all .18s}
+.val-card.sel{border-color:var(--navy2);background:var(--pale)}
+.val-card.rank1{border-color:var(--gold)!important;background:var(--gold-lt)!important}
+.val-card.rank2{border-color:var(--navy2)!important;background:var(--pale)!important}
+.val-card.rank3{border-color:var(--sky)!important;background:#EEF5FF!important}
+.val-emoji{font-size:25px;display:block;margin-bottom:5px}
+.val-name{font-size:12px;font-weight:700;color:var(--navy2)}
+.val-hint{font-size:10px;color:var(--light);margin-top:2px}
+.rank-badge{display:inline-block;font-size:10px;font-weight:900;padding:1px 7px;border-radius:10px;margin-top:4px;color:var(--white)}
+.match-result{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:14px;display:none}
+.match-result.show{display:block}
+.match-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.match-rank{font-size:11px;font-weight:700;color:var(--gray);min-width:16px}
+.match-name{font-size:12px;font-weight:700;color:var(--navy2);flex:1}
+.match-bar-track{width:70px;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.match-bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--gold),#A07820)}
+.match-pct{font-size:11px;font-weight:700;color:var(--navy2);min-width:30px;text-align:right}
+
+/* ── 로드맵 ── */
+.roadmap-card{background:var(--white);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:12px}
+.rm-header{padding:13px;background:var(--navy);display:flex;align-items:center;gap:10px}
+.rm-emoji{font-size:22px}
+.rm-title{font-size:14px;font-weight:700;color:var(--white)}
+.rm-type{font-size:10px;color:var(--sky);margin-top:2px}
+.rm-body{padding:14px}
+.rm-row{display:flex;gap:8px;margin-bottom:9px;align-items:flex-start}
+.rm-label{font-size:10px;font-weight:700;padding:3px 7px;border-radius:7px;background:var(--pale);color:var(--navy2);white-space:nowrap;margin-top:2px;min-width:52px;text-align:center}
+.rm-text{font-size:12px;color:var(--dark);line-height:1.6}
+
+/* ── 진로 카드 ── */
+.career-card{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 55%,var(--navy3) 100%);border-radius:18px;padding:22px 20px 18px;position:relative;overflow:hidden;margin-bottom:14px}
+.career-card::after{content:'';position:absolute;top:-30px;right:-30px;width:130px;height:130px;border-radius:50%;background:rgba(200,168,75,.12)}
+.cc-tag{font-size:8px;color:rgba(255,255,255,.35);letter-spacing:2px;text-transform:uppercase;margin-bottom:7px}
+.cc-name{font-size:20px;font-weight:900;color:var(--white);margin-bottom:2px;font-family:'DM Serif Display',serif}
+.cc-code{font-size:12px;color:var(--sky);margin-bottom:8px}
+.cc-divider{height:1px;background:rgba(255,255,255,.12);margin:10px 0}
+.cc-sec-lbl{font-size:8px;color:rgba(255,255,255,.3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px}
+.cc-chips{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px}
+.cc-chip{background:rgba(255,255,255,.1);color:rgba(255,255,255,.8);font-size:10px;padding:3px 9px;border-radius:16px}
+.cc-quote{font-size:11px;color:rgba(255,255,255,.65);line-height:1.6;padding:9px 11px;border-radius:8px;background:rgba(255,255,255,.07);border-left:2px solid var(--gold);margin-bottom:10px;font-style:italic}
+.cc-footer{font-size:9px;color:rgba(255,255,255,.22);padding-top:8px;border-top:1px solid rgba(255,255,255,.08)}
+.reflect{background:var(--white);border:1px solid var(--border);border-radius:11px;padding:13px;margin-bottom:10px}
+.reflect-q{font-size:12px;font-weight:700;color:var(--navy2);margin-bottom:7px}
+.record-box{background:var(--green-lt);border:1.5px solid #BBF7D0;border-radius:11px;padding:13px;margin-bottom:10px}
+.record-title{font-size:12px;font-weight:700;color:#166534;margin-bottom:8px}
+.record-preview{font-size:11px;color:#166534;line-height:1.9;padding:10px 12px;background:var(--white);border-radius:8px;border:1px solid #BBF7D0;white-space:pre-wrap;word-break:keep-all}
+
+/* ── 버튼 ── */
+.bnav{position:fixed;bottom:0;left:0;right:0;padding:10px 16px 16px;background:linear-gradient(to top,var(--white) 80%,transparent);display:flex;gap:8px;z-index:50}
+.btn{flex:1;padding:13px;border-radius:11px;border:1.5px solid var(--border);background:var(--white);color:var(--dark);font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .15s}
+.btn:active{transform:scale(.97)}
+.btn-navy{background:var(--navy2);color:var(--white);border-color:var(--navy2)}
+.btn-gold{background:var(--gold);color:var(--white);border-color:var(--gold)}
+.btn:disabled{opacity:.4;pointer-events:none}
+</style>
+</head>
+<body>
+<div class="hd">
+  <div><div class="hd-logo">AI 커리어<span>.</span>큐레이션</div>
+  <div class="hd-sub">3-4교시 | AI 시대 직업 탐색 (90분)</div></div>
+  <div class="hd-step" id="hd-step">STEP 1 / 5</div>
+</div>
+<div class="tabs">
+  <button class="tab active" id="t0" onclick="go(0)">① 검사 요약</button>
+  <button class="tab" id="t1" onclick="go(1)">② 직업 탐색</button>
+  <button class="tab" id="t2" onclick="go(2)">③ 가치관</button>
+  <button class="tab" id="t3" onclick="go(3)">④ 로드맵</button>
+  <button class="tab" id="t4" onclick="go(4)">⑤ 진로 카드</button>
+</div>
+
+<!-- STEP 1: 검사 요약 -->
+<div class="sec on" id="s0">
+<div style="padding-top:14px">
+  <div class="sec-title">📋 1-2교시 검사 결과 요약</div>
+  <div class="sec-sub">결과지를 보며 오늘 배운 내용을 정리해요!</div>
+  <div class="guide">📌 <b>결과지를 꺼내세요!</b><br>각 항목을 결과지 보며 직접 입력해요.</div>
+  <div class="card">
+    <div style="font-size:13px;font-weight:700;color:var(--navy2);margin-bottom:10px">👤 기본 정보</div>
+    <div class="ig"><span class="lbl">이름</span><input type="text" id="inp-name" placeholder="홍길동" oninput="syncCard()"></div>
+    <div class="row2">
+      <div><span class="lbl">학교/학년반</span><input type="text" id="inp-school" placeholder="행복중 1-3" oninput="syncCard()"></div>
+      <div><span class="lbl">검사 실시일</span><input type="text" id="inp-date" placeholder="2025.03.10"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div style="font-size:13px;font-weight:700;color:var(--navy2);margin-bottom:4px">🔑 나의 진로코드</div>
+    <div style="font-size:10px;color:var(--light);margin-bottom:10px">결과지 ① '검사 후 진로코드' 행</div>
+    <div class="row2">
+      <div><span class="lbl">1차 코드</span><input type="text" id="inp-c1" placeholder="E" maxlength="1" oninput="this.value=this.value.toUpperCase();renderCodeDisp();syncCard();updateMatchBadges()" style="font-size:26px;font-weight:900;text-align:center;letter-spacing:3px"></div>
+      <div><span class="lbl">2차 코드</span><input type="text" id="inp-c2" placeholder="C" maxlength="1" oninput="this.value=this.value.toUpperCase();renderCodeDisp();syncCard();updateMatchBadges()" style="font-size:26px;font-weight:900;text-align:center;letter-spacing:3px"></div>
+    </div>
+    <div id="code-disp-wrap"></div>
+  </div>
+  <div class="card">
+    <div style="font-size:13px;font-weight:700;color:var(--navy2);margin-bottom:4px">📊 RIASEC 점수</div>
+    <div style="font-size:10px;color:var(--light);margin-bottom:10px">결과지 ② '종합' 행 숫자 6개</div>
+    <div class="riasec-grid" id="riasec-grid"></div>
+    <div class="radar-wrap" id="radar-wrap"><div style="font-size:11px;font-weight:700;color:var(--navy2);margin-bottom:8px;text-align:left">나의 RIASEC 프로파일</div><canvas id="radarCanvas" width="250" height="250" style="max-width:250px;width:100%"></canvas></div>
+  </div>
+  <div class="card">
+    <div style="font-size:13px;font-weight:700;color:var(--navy2);margin-bottom:4px">📈 진로 성숙도 T점수</div>
+    <div style="font-size:10px;color:var(--light);margin-bottom:10px">결과지 ③ T점수 행 6개 (평균 50점)</div>
+    <div class="mat-grid" id="mat-grid"></div>
+    <div id="mat-bars-wrap" style="display:none"><div class="mat-bars" id="mat-bars"></div></div>
+  </div>
+  <div class="card">
+    <div style="font-size:13px;font-weight:700;color:var(--navy2);margin-bottom:4px">🎯 진로의사 결정 유형</div>
+    <div style="font-size:10px;color:var(--light);margin-bottom:10px">결과지 ④ — 가장 높은 점수 유형 선택</div>
+    <div id="dec-grid"></div>
+  </div>
+  <div class="card">
+    <div style="font-size:13px;font-weight:700;color:var(--navy2);margin-bottom:4px">💼 결과지 추천 직업 (⑦)</div>
+    <div style="font-size:10px;color:var(--light);margin-bottom:8px">가장 끌리는 직업 3개</div>
+    <div class="ig"><span class="lbl">직업 1</span><input type="text" id="inp-job1" placeholder="예) 재무 관리자" oninput="syncCard()"></div>
+    <div class="ig"><span class="lbl">직업 2</span><input type="text" id="inp-job2" placeholder="예) 회계사" oninput="syncCard()"></div>
+    <div class="ig" style="margin-bottom:0"><span class="lbl">직업 3</span><input type="text" id="inp-job3" placeholder="예) 데이터 분석가" oninput="syncCard()"></div>
+  </div>
+</div>
+<div class="bnav"><button class="btn" disabled>← 이전</button><button class="btn btn-navy" onclick="go(1)">직업 탐색 →</button></div>
+</div>
+
+<!-- STEP 2: 직업 탐색 (토너먼트 + 카드) -->
+<div class="sec" id="s1">
+<div style="padding-top:14px">
+  <div class="sec-title">🔭 AI 시대 직업 탐색</div>
+  <div class="sec-sub">탐색 방식을 선택해요!</div>
+
+  <!-- 모드 선택 -->
+  <div id="mode-select-wrap">
+    <div class="trn-mode-select">
+      <div class="mode-btn" id="mode-trn" onclick="selectMode('tournament')">
+        <span class="mode-emoji">⚔️</span>
+        <div class="mode-name">이상형 월드컵</div>
+        <div class="mode-desc">2개씩 대결해서<br>최애 직업 찾기!</div>
+      </div>
+      <div class="mode-btn" id="mode-card" onclick="selectMode('card')">
+        <span class="mode-emoji">🃏</span>
+        <div class="mode-name">카드 탐색</div>
+        <div class="mode-desc">30개 직업 카드를<br>자유롭게 탐색</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 토너먼트 영역 -->
+  <div id="trn-wrap" style="display:none">
+    <div id="trn-size-select">
+      <div class="guide">⚔️ <b>몇 강으로 시작할까요?</b><br>직업 중에서 랜덤으로 뽑아 토너먼트를 시작해요!</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px">
+        <button class="btn" onclick="startTrn(8)">8강<br><span style="font-size:10px;color:var(--light)">4번 대결</span></button>
+        <button class="btn btn-navy" onclick="startTrn(16)">16강<br><span style="font-size:10px;color:rgba(255,255,255,.6)">8번 대결</span></button>
+        <button class="btn" onclick="startTrn(32)">32강<br><span style="font-size:10px;color:var(--light)">16번 대결</span></button>
+      </div>
+    </div>
+    <div id="trn-game" style="display:none">
+      <div class="trn-header">
+        <div class="trn-round" id="trn-round-lbl"></div>
+        <div class="trn-progress" id="trn-progress"></div>
+        <div style="font-size:11px;color:var(--light)" id="trn-count-lbl"></div>
+      </div>
+      <div class="trn-vs" id="trn-vs-area"></div>
+      <button class="trn-skip" onclick="skipTrn()">⏭ 둘 다 마음에 안 들어요 (랜덤 선택)</button>
+      <div class="trn-history" id="trn-hist-wrap" style="display:none">
+        <div class="trn-hist-title">⭐ 지금까지 선택한 직업</div>
+        <div class="trn-hist-grid" id="trn-hist-chips"></div>
+      </div>
+    </div>
+    <div id="trn-final" style="display:none">
+      <div class="trn-result" id="trn-result-card"></div>
+      <div class="trn-history">
+        <div class="trn-hist-title">🏆 토너먼트 전체 결과</div>
+        <div class="trn-hist-grid" id="trn-all-chips"></div>
+      </div>
+      <button class="btn" style="width:100%;margin-bottom:8px" onclick="resetTrn()">🔄 다시 하기</button>
+    </div>
+  </div>
+
+  <!-- 카드 탐색 영역 -->
+  <div id="card-wrap" style="display:none">
+    <div class="guide">📌 내 진로코드와 맞는 직업에 <b>✨ 배지</b>가 표시돼요. 유형 필터로 골라볼 수 있어요!</div>
+    <div class="filter-bar" id="filter-bar"></div>
+    <div id="job-grid"></div>
+  </div>
+
+  <div class="star-sum" id="star-sum"><div style="font-size:12px;font-weight:700;color:#7A5E1A">⭐ 내가 선택한 관심 직업</div><div class="star-chips" id="star-chips"></div></div>
+</div>
+<div class="bnav"><button class="btn" onclick="go(0)">← 이전</button><button class="btn btn-navy" onclick="go(2)">가치관 매칭 →</button></div>
+</div>
+
+<!-- STEP 3: 가치관 -->
+<div class="sec" id="s2">
+<div style="padding-top:14px">
+  <div class="sec-title">💛 나의 직업 가치관</div>
+  <div class="sec-sub">직업에서 가장 중요한 가치를 순서대로 골라봐요!</div>
+  <div class="guide">📌 중요한 순서대로 <b>최대 3개</b>를 눌러요!</div>
+  <div class="value-grid" id="value-grid"></div>
+  <div class="match-result" id="match-result"><div style="font-size:13px;font-weight:700;color:var(--navy2);margin-bottom:10px">✨ 내 가치관에 맞는 직업 TOP 5</div><div id="match-list"></div></div>
+</div>
+<div class="bnav"><button class="btn" onclick="go(1)">← 이전</button><button class="btn btn-navy" onclick="go(3)">커리어 로드맵 →</button></div>
+</div>
+
+<!-- STEP 4: 로드맵 -->
+<div class="sec" id="s3">
+<div style="padding-top:14px">
+  <div class="sec-title">🗺️ 커리어 로드맵</div>
+  <div class="sec-sub">관심 직업의 준비 방법을 확인해봐요!</div>
+  <div class="guide">📌 관심 직업으로 선택한 직업의 로드맵이에요.</div>
+  <div id="roadmap-wrap"><div class="card" style="text-align:center;color:var(--light);padding:32px">STEP ②에서 관심 직업을 선택하면<br>로드맵이 여기에 나타나요!</div></div>
+</div>
+<div class="bnav"><button class="btn" onclick="go(2)">← 이전</button><button class="btn btn-gold" onclick="go(4)">진로 카드 완성 →</button></div>
+</div>
+
+<!-- STEP 5: 진로 카드 -->
+<div class="sec" id="s4">
+<div style="padding-top:14px">
+  <div class="sec-title">🪪 나만의 AI 커리어 카드</div>
+  <div class="sec-sub">오늘 탐색한 모든 내용이 담긴 카드예요!</div>
+  <div class="gold-guide">📸 카드를 <b>스크린샷</b>으로 저장 → 패들렛에 업로드해요!</div>
+  <div class="career-card">
+    <div class="cc-tag">AI CAREER CURATION · 3-4교시</div>
+    <div class="cc-name" id="cc-name">나의 이름</div>
+    <div class="cc-code" id="cc-code">진로코드: —</div>
+    <div class="cc-divider"></div>
+    <div class="cc-sec-lbl">토너먼트 우승 / 관심 직업</div>
+    <div class="cc-chips" id="cc-jobs"></div>
+    <div class="cc-sec-lbl">나의 직업 가치관</div>
+    <div class="cc-chips" id="cc-vals"></div>
+    <div class="cc-quote" id="cc-quote">"AI 시대 나만의 커리어를 탐색하는 중입니다."</div>
+    <div class="cc-footer" id="cc-footer">탐색일: — | AI 커리어 큐레이션</div>
+  </div>
+  <div class="reflect"><div class="reflect-q">💬 오늘 가장 인상 깊었던 직업과 이유는?</div><textarea rows="3" id="inp-reflect1" placeholder="예) AI 의료 진단사가 인상 깊었어요. AI로 병을 발견하는 것이 생명을 살리는 일이라 의미 있었어요."></textarea></div>
+  <div class="reflect"><div class="reflect-q">🎯 이 직업을 위해 지금부터 할 수 있는 한 가지는?</div><textarea rows="2" id="inp-reflect2" placeholder="예) 과학 공부를 열심히 하고 의학 다큐멘터리를 자주 보겠습니다."></textarea></div>
+  <div class="record-box"><div class="record-title">📋 학생부 진로 활동 특기사항 초안 <span style="font-size:10px;font-weight:400">(교사 참고용)</span></div><div class="record-preview" id="record-preview">내용이 채워지면 초안이 자동 생성됩니다.</div></div>
+</div>
+<div class="bnav"><button class="btn" onclick="go(3)">← 이전</button><button class="btn btn-gold" onclick="alert('🎉 완성!\n\n진로 카드를 스크린샷으로 저장하고\n패들렛에 업로드해요! 😊')">완성! 🎉</button></div>
+</div>
+
+<script>
+const TYPE_INFO={R:{name:'현실형',emoji:'🔧'},I:{name:'탐구형',emoji:'🔬'},A:{name:'예술형',emoji:'🎨'},S:{name:'사회형',emoji:'🤝'},E:{name:'진취형',emoji:'🚀'},C:{name:'관습형',emoji:'📋'}};
+const RIASEC_COLS=[{code:'R',name:'현실형'},{code:'I',name:'탐구형'},{code:'A',name:'예술형'},{code:'S',name:'사회형'},{code:'E',name:'진취형'},{code:'C',name:'관습형'}];
+const MATURITY=[{id:'m1',name:'진로 효능감',sub:'진로 자신감'},{id:'m2',name:'진로 정체성',sub:'나에 대한 확신'},{id:'m3',name:'진로 동기',sub:'의지와 열정'},{id:'m4',name:'진로 성취',sub:'실행력·끈기'},{id:'m5',name:'진로 통제',sub:'주도성'},{id:'m6',name:'직업 이해',sub:'직업 정보 수준'}];
+const DECISIONS=[{id:'rational',emoji:'🧠',name:'합리적 의사결정',desc:'정보 수집과 논리적 분석으로 체계적으로 진로를 결정해요.',kw:'#논리전략 #자기신뢰 #계획적'},{id:'conflict',emoji:'💭',name:'내적 갈등',desc:'명확한 기준이 부족해 진로 선택에 어려움을 느껴요.',kw:'#신중함 #결정유예 #탐색필요'},{id:'intuitive',emoji:'💡',name:'직관적 의사결정',desc:'느낌과 감각을 우선시해 빠르게 진로를 결정하는 편이에요.',kw:'#감각적 #빠른판단 #주관뚜렷'}];
+const VALUES=[{id:'help',emoji:'🤝',name:'사람 도움',hint:'세상과 사람에게 기여'},{id:'create',emoji:'🎨',name:'창의·창작',hint:'새로운 것을 만드는 삶'},{id:'money',emoji:'💰',name:'돈·안정',hint:'높은 연봉, 안정적 직업'},{id:'fame',emoji:'⭐',name:'명예·인정',hint:'사회적 인정, 영향력'},{id:'fun',emoji:'🎮',name:'재미·흥미',hint:'하고 싶은 일을 하는 삶'},{id:'grow',emoji:'📈',name:'성장·발전',hint:'배우고 발전하는 삶'}];
+
+const JOBS=[
+  {id:'smartfarm',emoji:'🌱',name:'스마트팜 엔지니어',type:'R',ai:75,desc:'드론·센서·AI로 도시 농업 설계',story:'고층 건물 안에서 드론과 AI 센서로 채소를 키우는 시대! 기후 위기 속 식량 문제를 첨단 기술로 해결하는 농업 혁신가예요.',skills:['IoT 센서 운용','드론 조종','데이터 분석','식물 생리학'],values:['create','help','grow'],roadmap:{need:'공학·생명과학·데이터 기초',prepare:'과학 탐구, 코딩 입문, 농업 체험',major:'스마트팜학과, 생명공학과',outlook:'기후 위기로 2030년대 수요 급증'}},
+  {id:'rescue',emoji:'🤖',name:'재난구조 로봇 운영사',type:'R',ai:80,desc:'위험 현장에 로봇 투입·조종',story:'지진·화재 현장에 사람 대신 로봇을 투입해 생존자를 구조해요. 냉철한 판단력과 조종 기술이 빛나는 직업이에요.',skills:['로봇 원격 조종','위기 판단','기계 유지보수','팀워크'],values:['help','grow','money'],roadmap:{need:'로봇공학·제어공학·물리학',prepare:'드론 자격증, 로봇 키트 조립, STEM 캠프',major:'로봇공학과, 소방안전공학과',outlook:'재난 증가로 전 세계 수요 확대'}},
+  {id:'selfcar',emoji:'🚗',name:'자율주행차 테스터',type:'R',ai:70,desc:'자율주행 AI 안전성 현장 테스트',story:'도로 위에서 자율주행차가 예상치 못한 상황에서도 안전한지 직접 테스트하고 개선점을 찾는 첨단 테스터예요.',skills:['차량 조작','데이터 기록','안전 분석','엔지니어링 기초'],values:['grow','money','create'],roadmap:{need:'기계·전자·소프트웨어 기초',prepare:'코딩 기초, 자동차 구조 공부, 물리학',major:'자동차공학과, 전자공학과',outlook:'완전 자율주행 상용화로 수요 급증 예정'}},
+  {id:'space',emoji:'🛸',name:'우주 시설 유지관리사',type:'R',ai:55,desc:'우주 정거장·위성 시설 유지보수',story:'우주 정거장의 생명유지 시스템, 태양광 패널, 로봇팔 등을 점검하고 수리하는 우주 시대의 엔지니어예요.',skills:['항공우주 기계','EVA 우주유영','시스템 점검','응급 수리'],values:['grow','fame','create'],roadmap:{need:'항공우주·기계·물리학 심화',prepare:'물리·수학 심화, 항공 모형 조립, 우주 뉴스',major:'항공우주공학과, 기계공학과',outlook:'민간 우주산업 급성장, 2035년 달 기지 예정'}},
+  {id:'bioprint',emoji:'🖨️',name:'3D 바이오프린팅 기술자',type:'R',ai:65,desc:'인체 조직·장기를 3D 프린팅으로 제작',story:'살아있는 세포로 귀, 코, 피부 조직을 프린팅하는 기술자예요. SF 영화 속 장면이 현실이 되는 직업!',skills:['3D 프린팅 조작','생체재료 이해','정밀 교정','품질 검사'],values:['help','grow','create'],roadmap:{need:'생명과학·재료공학·3D 프린팅',prepare:'3D 프린터 체험, 생물 심화, 과학 탐구',major:'바이오메디컬공학과, 재료공학과',outlook:'의료 바이오프린팅 시장 2030년 5조원 전망'}},
+  {id:'aimedic',emoji:'🏥',name:'AI 의료 진단사',type:'I',ai:90,desc:'AI로 MRI·X-ray 판독 보조',story:'AI가 수천 장의 의료 영상을 초고속으로 분석해 의사의 진단을 돕는 시대! 의학 지식과 AI가 결합된 생명을 구하는 직업이에요.',skills:['의료 영상 분석','AI 모델 이해','임상 데이터','의학 지식'],values:['help','grow','fame'],roadmap:{need:'생물·화학·수학·AI 기초',prepare:'과학 올림피아드, 의학 다큐, 코딩 기초',major:'의학과, 의공학과, 바이오메디컬공학과',outlook:'헬스케어 AI 시장 연 30% 성장 중'}},
+  {id:'climate',emoji:'🌍',name:'기후변화 데이터 과학자',type:'I',ai:70,desc:'기후 빅데이터 분석으로 재난 예측',story:'위성·기상 빅데이터를 AI로 분석해 홍수·태풍을 예측하고 인류를 보호하는 과학자예요.',skills:['빅데이터 분석','통계학','기후 모델링','파이썬/R'],values:['help','grow','fame'],roadmap:{need:'수학·통계·지구과학 심화',prepare:'데이터 분석 입문, 기후 뉴스, 수학 심화',major:'통계학과, 대기과학과, 환경공학과',outlook:'기후 테크 투자 급증, 핵심 인재 부족'}},
+  {id:'bci',emoji:'🧠',name:'뇌-컴퓨터 인터페이스 연구원',type:'I',ai:85,desc:'뇌와 컴퓨터를 연결하는 신경공학 연구',story:'생각만으로 컴퓨터를 조작하거나, 마비 환자가 로봇팔을 움직일 수 있도록 뇌와 기계를 연결하는 연구자예요.',skills:['신경과학','신호 처리','AI 알고리즘','임상 연구'],values:['grow','help','fame'],roadmap:{need:'뇌과학·전자공학·AI 기초',prepare:'생물·물리 심화, 뇌과학 도서, 수학 심화',major:'뇌공학과, 전자공학과, 의공학과',outlook:'Neuralink 등으로 시장 폭발적 성장 예상'}},
+  {id:'quantum',emoji:'⚛️',name:'양자컴퓨터 알고리즘 개발자',type:'I',ai:40,desc:'양자역학 기반 초고속 컴퓨팅 알고리즘 설계',story:'기존 컴퓨터가 수천 년 걸릴 계산을 단 몇 초에 풀어내는 양자컴퓨터의 알고리즘을 개발하는 최첨단 연구자예요.',skills:['양자역학','선형대수','알고리즘 설계','프로그래밍'],values:['grow','fame','create'],roadmap:{need:'물리·수학(선형대수)·컴퓨터과학',prepare:'수학 심화, 파이썬 코딩, 물리올림피아드',major:'물리학과, 컴퓨터공학과, 수학과',outlook:'2030년대 양자 우위 시대 개막, 최고 연봉 직군'}},
+  {id:'aidrug',emoji:'💊',name:'AI 신약 개발사',type:'I',ai:92,desc:'AI로 신약 후보물질 발굴·분석',story:'수백만 개의 분자 구조를 AI가 분석해 새로운 약을 개발해요. 기존 10년 걸리던 신약 개발을 2~3년으로 단축하는 혁신 연구자예요.',skills:['화학·생물학','AI 모델 이해','데이터 분석','임상 지식'],values:['help','grow','fame'],roadmap:{need:'화학·생물·수학·AI 기초',prepare:'화학올림피아드, 생물 심화, 코딩 기초',major:'약학과, 화학과, 바이오공학과',outlook:'AI 신약 시장 2030년 50조원, 핵심 인재 품귀'}},
+  {id:'aicreator',emoji:'🎬',name:'AI 크리에이터',type:'A',ai:88,desc:'AI 도구로 영상·음악·웹툰 제작',story:'Sora, Midjourney, Suno AI 등으로 혼자서 영화 같은 영상, 음악, 웹툰을 만드는 1인 창작자! 상상력이 가장 중요한 직업이에요.',skills:['AI 도구 활용','스토리텔링','영상 편집','콘텐츠 기획'],values:['create','fun','fame'],roadmap:{need:'디자인 감각, 스토리텔링, AI 도구',prepare:'Canva·Midjourney 체험, 유튜브 운영',major:'영상학과, 디자인학과, 미디어아트학과',outlook:'AI 콘텐츠 시장 폭발적 성장 중'}},
+  {id:'xr',emoji:'🥽',name:'XR 경험 디자이너',type:'A',ai:65,desc:'VR·AR 가상공간 경험 설계',story:'메타버스 학교, VR 여행, AR 쇼핑 등 가상현실 공간에서의 경험을 처음부터 끝까지 설계하는 미래의 공간 디자이너예요.',skills:['UX 디자인','3D 모델링','공간 감각','사용자 심리'],values:['create','fun','grow'],roadmap:{need:'디자인·심리학·컴퓨터그래픽스',prepare:'Blender 3D, VR 기기 체험, UX 공부',major:'UX디자인학과, 실감미디어학과',outlook:'메타버스 시장 2030년 1조 달러 전망'}},
+  {id:'hologram',emoji:'🌟',name:'홀로그램 공연 연출가',type:'A',ai:58,desc:'홀로그램 기술로 공연·전시 연출',story:'고인이 된 아티스트의 홀로그램 콘서트, 역사 인물이 살아 움직이는 박물관 전시를 연출하는 미래의 공연 예술가예요.',skills:['공연 연출','홀로그램 기술','스토리텔링','예술 감각'],values:['create','fun','fame'],roadmap:{need:'예술·영상·홀로그램 기술 이해',prepare:'영상 편집, 공연 관람, 예술 활동',major:'공연예술학과, 영상디자인학과',outlook:'K-팝·K-문화 확산으로 글로벌 수요 증가'}},
+  {id:'aifashion',emoji:'👗',name:'AI 패션 디자이너',type:'A',ai:72,desc:'AI로 개인 맞춤 패션 디자인',story:'내 체형·취향·기분을 AI가 분석해 오늘의 코디를 추천하고, 3D 가상 피팅으로 옷을 미리 입어볼 수 있게 만드는 패션 디자이너예요.',skills:['패션 디자인','AI 도구 활용','트렌드 분석','3D 모델링'],values:['create','fun','money'],roadmap:{need:'디자인·패션·AI 기초',prepare:'패션 드로잉, AI 이미지 생성 체험',major:'패션디자인학과, 의류학과',outlook:'AI 맞춤 패션 시장 연 25% 성장'}},
+  {id:'aiwriter',emoji:'✍️',name:'감성 AI 작가',type:'A',ai:80,desc:'AI와 협업해 소설·시나리오 창작',story:'AI가 데이터 기반 스토리 초안을 쓰면, 인간 작가가 감성과 철학을 불어넣어 완성하는 인간-AI 협업 창작자예요.',skills:['스토리텔링','AI 프롬프팅','편집·교열','감성 표현'],values:['create','fun','fame'],roadmap:{need:'문학·인문학·AI 도구 이해',prepare:'독서, 글쓰기 연습, AI 글쓰기 도구 체험',major:'문예창작학과, 국어국문학과',outlook:'AI 시대 인간만의 감성 콘텐츠 가치 상승'}},
+  {id:'counselor',emoji:'💙',name:'디지털 상담사',type:'S',ai:45,desc:'AI 챗봇과 협력해 청소년 상담',story:'AI가 24시간 1차 상담을 제공하고, 전문 상담사가 깊은 공감과 전문 개입을 담당해요. 기술과 따뜻한 인간미가 결합된 직업이에요.',skills:['심리 상담','AI 협업','공감 능력','위기 개입'],values:['help','fun','grow'],roadmap:{need:'심리학·사회복지학·공감 능력',prepare:'봉사 활동, 심리학 도서, 상담사 인터뷰',major:'심리상담학과, 사회복지학과',outlook:'정신건강 수요 급증, 디지털 상담 신시장'}},
+  {id:'eldercare',emoji:'🏠',name:'노인케어 로봇 코디네이터',type:'S',ai:72,desc:'돌봄 로봇 운영·감정 케어',story:'AI 돌봄 로봇이 어르신 건강을 모니터링하고, 코디네이터는 로봇이 놓친 감정적 교감과 맞춤 케어를 담당해요.',skills:['돌봄 로봇 운용','노인 심리','응급처치','AI 모니터링'],values:['help','money','grow'],roadmap:{need:'사회복지·노인복지·간호 기초',prepare:'요양원 봉사, 로봇 체험, 노인 인터뷰',major:'노인복지학과, 간호학과',outlook:'초고령 사회 진입으로 수요 폭증'}},
+  {id:'aiclass',emoji:'📚',name:'AI 교육 튜터',type:'S',ai:78,desc:'AI 맞춤형 학습으로 1:1 지도',story:'학생 한 명 한 명의 학습 패턴을 AI가 분석해 최적 경로를 설계하고, 교사는 감성적 지원과 심화 지도를 담당해요.',skills:['학습 설계','AI 도구 활용','학습 심리','커뮤니케이션'],values:['help','grow','fun'],roadmap:{need:'교육학·심리학·AI 기초',prepare:'튜터링 봉사, 교육 앱 사용, 심리학 기초',major:'교육학과, 교육공학과',outlook:'에듀테크 시장 연 20% 성장'}},
+  {id:'multicul',emoji:'🌐',name:'다문화 통·번역 코디네이터',type:'S',ai:60,desc:'AI 번역과 문화 감수성으로 다문화 지원',story:'AI가 언어 번역을 담당하고, 코디네이터는 문화적 맥락·감정·뉘앙스를 조율해 다문화 가정과 이민자를 지원해요.',skills:['다국어 능력','문화 이해','AI 번역 도구','커뮤니케이션'],values:['help','grow','fun'],roadmap:{need:'외국어·문화학·사회복지 기초',prepare:'외국어 학습, 다문화 봉사, 여행·교류',major:'다문화복지학과, 사회복지학과, 어학계열',outlook:'다문화 가족 100만 시대, 전문가 부족'}},
+  {id:'mentalai',emoji:'🌸',name:'정신건강 AI 코치',type:'S',ai:50,desc:'AI 기반 스트레스·감정 관리 코치',story:'스마트워치 데이터, 표정·목소리 분석으로 스트레스 상태를 파악하고, 맞춤 명상·운동·상담을 연결해주는 웰빙 코치예요.',skills:['정신건강 지식','AI 데이터 해석','코칭 기법','공감 능력'],values:['help','fun','grow'],roadmap:{need:'심리학·보건학·AI 기초',prepare:'명상·마음챙김 실천, 심리학 기초, 봉사',major:'심리학과, 보건학과, 상담심리학과',outlook:'번아웃 시대 폭발적 수요 예상'}},
+  {id:'startup',emoji:'💡',name:'소셜 임팩트 스타트업 대표',type:'E',ai:60,desc:'AI로 사회문제 해결 창업',story:'환경·교육·노인 고독 등 사회문제를 AI로 해결하는 스타트업 창업! 돈도 벌고 세상도 바꾸는 임팩트 기업가예요.',skills:['리더십','비즈니스 모델','팀 관리','AI 기획'],values:['fame','create','money'],roadmap:{need:'경영·마케팅·AI 기초, 리더십',prepare:'창업 동아리, 아이디어 공모전, 사회적기업 탐방',major:'경영학과, 사회혁신학과',outlook:'임팩트 스타트업 투자 연 40% 성장'}},
+  {id:'curator',emoji:'🧭',name:'커리어 큐레이터',type:'E',ai:55,desc:'AI로 맞춤 진로 설계 서비스 제공',story:'AI 분석 데이터로 맞춤 진로 경로를 설계하고 코칭하는 직업이에요. 오늘 여러분이 경험하는 것이 바로 이거예요!',skills:['진로 상담','데이터 이해','커뮤니케이션','AI 도구'],values:['help','fame','grow'],roadmap:{need:'심리학·교육학·AI 기초',prepare:'진로 멘토링 봉사, RIASEC 공부, 코칭 도서',major:'교육학과, 진로상담학과',outlook:'AI 시대 진로 불확실성 증가로 수요 급증'}},
+  {id:'esg',emoji:'♻️',name:'ESG 전략 컨설턴트',type:'E',ai:62,desc:'기업의 환경·사회·지배구조 전략 수립',story:'탄소중립, 공정 노동, 투명 경영을 실현하는 ESG 전략을 기업에 제안하는 컨설턴트예요. 돈과 윤리를 동시에 잡는 직업!',skills:['전략 기획','환경·사회 지식','데이터 분석','설득·제안'],values:['fame','help','money'],roadmap:{need:'경영·환경·법학 기초, 분석력',prepare:'ESG 뉴스 탐독, 토론 대회, 경제 공부',major:'경영학과, 환경공학과, 법학과',outlook:'전 세계 ESG 의무화로 전문가 수요 폭증'}},
+  {id:'aimarketing',emoji:'📣',name:'AI 마케팅 디렉터',type:'E',ai:82,desc:'AI로 초개인화 마케팅 전략 기획',story:'AI가 소비자 행동 빅데이터를 분석하면, 디렉터는 그 인사이트로 감동적인 마케팅 캠페인을 기획해요.',skills:['마케팅 전략','AI 데이터 분석','크리에이티브','소비자 심리'],values:['create','money','fame'],roadmap:{need:'마케팅·심리학·데이터 기초',prepare:'SNS 콘텐츠 제작, 마케팅 사례 분석',major:'경영학과, 광고홍보학과',outlook:'AI 마케팅 시장 연 35% 성장'}},
+  {id:'metarealty',emoji:'🏙️',name:'메타버스 부동산 중개사',type:'E',ai:55,desc:'가상 세계 토지·건물 거래 중개',story:'메타버스 안의 상점 자리, 콘서트 홀, 아파트를 사고파는 부동산 중개사예요. 현실과 가상이 뒤섞인 시대의 새로운 직업!',skills:['메타버스 이해','부동산 지식','협상 능력','블록체인 기초'],values:['money','create','fame'],roadmap:{need:'경제·법학·메타버스 기초',prepare:'메타버스 플랫폼 체험, 경제 공부',major:'경제학과, 경영학과, 부동산학과',outlook:'메타버스 경제 규모 급성장 예상'}},
+  {id:'cybersec',emoji:'🛡️',name:'사이버보안 전문가',type:'C',ai:68,desc:'AI 해킹 탐지·방어 시스템 관리',story:'AI 악성코드·딥페이크 공격을 막는 디지털 수호자! 정밀하고 꼼꼼한 성격이 빛나는 직업이에요.',skills:['네트워크 보안','AI 위협 분석','암호화','취약점 분석'],values:['money','grow','help'],roadmap:{need:'수학·컴퓨터과학·네트워크',prepare:'정보보안 자격증, CTF 대회, 코딩 심화',major:'사이버보안학과, 컴퓨터공학과',outlook:'2030년까지 수요 40% 이상 증가'}},
+  {id:'aiaudit',emoji:'⚖️',name:'알고리즘 감사관',type:'C',ai:35,desc:'AI 결정의 공정성 검증·감사',story:'AI가 채용·대출·의료에서 내리는 결정이 차별 없이 공정한지 체계적으로 감사해요. AI 윤리 시대의 핵심 직업!',skills:['AI 시스템 이해','법·윤리 지식','데이터 검증','보고서 작성'],values:['help','fame','grow'],roadmap:{need:'법학·철학·통계·AI 윤리',prepare:'AI 윤리 도서, 토론 대회, 사회 이슈',major:'법학과, AI윤리학과, 통계학과',outlook:'AI 규제 강화로 가장 빠른 성장 직군'}},
+  {id:'privacy',emoji:'🔒',name:'개인정보 보호 전문가',type:'C',ai:50,desc:'데이터 수집·처리의 법적 준수 관리',story:'기업이 수집하는 수억 건의 개인 데이터가 법에 맞게 처리되는지 감시하고 위반 시 대응 방안을 만드는 데이터 수호자예요.',skills:['개인정보보호법','데이터 관리','감사·검증','법 해석'],values:['help','money','grow'],roadmap:{need:'법학·컴퓨터과학·통계 기초',prepare:'개인정보보호 자격증, 법학 기초, 뉴스',major:'법학과, 컴퓨터공학과, 경영정보학과',outlook:'개인정보보호 규제 강화로 전문가 부족'}},
+  {id:'aiaccounting',emoji:'🧾',name:'AI 회계감사사',type:'C',ai:78,desc:'AI로 재무 데이터 자동 분석·감사',story:'AI가 수백만 건의 거래 내역을 자동 분석하면, 감사사는 이상 징후를 찾아내고 재무 건전성을 최종 판단해요.',skills:['회계·세무 지식','AI 감사 도구','재무 분석','윤리 판단'],values:['money','grow','help'],roadmap:{need:'경영·회계·수학 기초',prepare:'회계 입문, 경제 뉴스, 수학 심화',major:'회계학과, 경영학과, 세무학과',outlook:'Big4 회계법인 AI 도입으로 고부가가치화'}},
+  {id:'smartcity',emoji:'🏛️',name:'스마트시티 데이터 관리자',type:'C',ai:72,desc:'도시 전체 IoT·빅데이터 통합 관리',story:'신호등, CCTV, 쓰레기통, 도로 센서 등 도시 전체의 데이터를 통합 관리해 교통·환경·안전을 최적화하는 도시 운영자예요.',skills:['빅데이터 관리','도시공학 이해','IoT 시스템','행정 절차'],values:['help','money','grow'],roadmap:{need:'컴퓨터과학·도시공학·통계',prepare:'코딩 기초, 도시 문제 관심, 데이터 분석',major:'도시공학과, 컴퓨터공학과, 행정학과',outlook:'스마트시티 전국 확대 정책으로 수요 급증'}},
+];
+
+// ─── 상태 ───────────────────────────────────
+let rsVals={R:0,I:0,A:0,S:0,E:0,C:0};
+let matVals={};
+let selDec=null;
+let selValues=[];
+let starJobs=new Set();
+let openJob=null;
+let curFilter='전체';
+let curMode=null;
+
+// ─── 토너먼트 상태 ───────────────────────────
+let trnPool=[];      // 현 라운드 참가자
+let trnWinners=[];   // 다음 라운드 진출자
+let trnMatchIdx=0;   // 현재 매치 인덱스
+let trnTotal=0;      // 이번 라운드 총 매치
+let trnHistory=[];   // 전체 선택 기록 {winner, loser}
+let trnSize=0;       // 8/16/32강
+
+// ─── RIASEC ──────────────────────────────────
+function renderRiasecGrid(){
+  document.getElementById('riasec-grid').innerHTML=RIASEC_COLS.map(c=>`<div class="rs-box"><div class="rs-code">${c.code}</div><div class="rs-name">${c.name}</div><input class="rs-input" type="number" min="0" max="100" id="rs-${c.code}" placeholder="0" oninput="onRs('${c.code}',this.value)"></div>`).join('');
+}
+function onRs(code,val){rsVals[code]=parseFloat(val)||0;drawRadar();syncCard();const any=Object.values(rsVals).some(v=>v>0);document.getElementById('radar-wrap').style.display=any?'block':'none';}
+function drawRadar(){
+  const canvas=document.getElementById('radarCanvas');if(!canvas)return;
+  const ctx=canvas.getContext('2d'),W=canvas.width,H=canvas.height,cx=W/2,cy=H/2,r=W*0.36;
+  ctx.clearRect(0,0,W,H);
+  const labels=['R','I','A','S','E','C'],vals=labels.map(l=>(rsVals[l]||0)/100),n=6,step=(Math.PI*2)/n,sa=-Math.PI/2;
+  ctx.strokeStyle='#D1DCF0';ctx.lineWidth=1;
+  [.25,.5,.75,1].forEach(ratio=>{ctx.beginPath();for(let i=0;i<n;i++){const a=sa+i*step,x=cx+Math.cos(a)*r*ratio,y=cy+Math.sin(a)*r*ratio;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}ctx.closePath();ctx.stroke();});
+  for(let i=0;i<n;i++){const a=sa+i*step;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r);ctx.strokeStyle='#D1DCF0';ctx.stroke();}
+  ctx.beginPath();for(let i=0;i<n;i++){const a=sa+i*step,v=vals[i],x=cx+Math.cos(a)*r*v,y=cy+Math.sin(a)*r*v;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}ctx.closePath();ctx.fillStyle='rgba(59,109,196,0.15)';ctx.fill();ctx.strokeStyle='#3B6DC4';ctx.lineWidth=2;ctx.stroke();
+  for(let i=0;i<n;i++){const a=sa+i*step,v=vals[i],x=cx+Math.cos(a)*r*v,y=cy+Math.sin(a)*r*v;ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fillStyle='#1A3A6B';ctx.fill();}
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  for(let i=0;i<n;i++){const a=sa+i*step,x=cx+Math.cos(a)*(r+20),y=cy+Math.sin(a)*(r+20);ctx.font='bold 12px Noto Sans KR,sans-serif';ctx.fillStyle='#1A3A6B';ctx.fillText(labels[i],x,y);ctx.font='10px Noto Sans KR,sans-serif';ctx.fillStyle='#94A3B8';ctx.fillText(Math.round(rsVals[labels[i]]||0),x,y+13);}
+}
+
+// ─── 성숙도 ──────────────────────────────────
+function renderMatGrid(){
+  document.getElementById('mat-grid').innerHTML=MATURITY.map(m=>`<div class="mat-item"><div class="mat-name">${m.name}</div><div class="mat-sub">${m.sub}</div><input class="mat-input" type="number" min="0" max="100" id="${m.id}" placeholder="T점수" oninput="onMat('${m.id}',this.value)"><div class="mat-lv" id="${m.id}-lv"></div></div>`).join('');
+}
+function onMat(id,val){
+  matVals[id]=parseFloat(val)||0;
+  const t=matVals[id],el=document.getElementById(id+'-lv');
+  if(t>=60){el.textContent='▲ 높음';el.style.color='var(--green)';}
+  else if(t>=40){el.textContent='— 보통';el.style.color='#D97706';}
+  else if(t>0){el.textContent='▼ 낮음';el.style.color='#DC2626';}
+  else el.textContent='';
+  renderMatBars();
+}
+function renderMatBars(){
+  const filled=MATURITY.filter(m=>matVals[m.id]>0);
+  document.getElementById('mat-bars-wrap').style.display=filled.length?'block':'none';
+  document.getElementById('mat-bars').innerHTML=MATURITY.map(m=>{const v=matVals[m.id]||0,c=v>=60?'var(--navy2)':v>=40?'var(--sky)':'#CBD5E1';return`<div class="bar-row"><div class="bar-lbl">${m.name}</div><div class="bar-track"><div class="bar-fill" style="width:${v}%;background:${c}">${v>15?`<span class="bar-val">${Math.round(v)}</span>`:''}</div></div><div class="bar-num">${Math.round(v)}</div></div>`;}).join('');
+}
+
+// ─── 의사결정 ────────────────────────────────
+function renderDecisions(){
+  document.getElementById('dec-grid').innerHTML=DECISIONS.map(d=>`<div class="dec-card ${selDec===d.id?'sel':''}" onclick="tapDec('${d.id}')"><div class="dec-title">${d.emoji} ${d.name}</div><div class="dec-desc">${d.desc}</div><div class="dec-kw">${d.kw}</div></div>`).join('');
+}
+function tapDec(id){selDec=selDec===id?null:id;renderDecisions();}
+
+// ─── 코드 표시 ───────────────────────────────
+function renderCodeDisp(){
+  const c1=document.getElementById('inp-c1')?.value.trim().toUpperCase(),c2=document.getElementById('inp-c2')?.value.trim().toUpperCase();
+  const wrap=document.getElementById('code-disp-wrap');
+  if(!c1||!TYPE_INFO[c1]){wrap.innerHTML='';return;}
+  const t1=TYPE_INFO[c1],t2=c2&&TYPE_INFO[c2]?TYPE_INFO[c2]:null;
+  wrap.innerHTML=`<div class="code-display"><div class="code-badge">${c1}</div>${t2?`<div style="font-size:18px;color:rgba(255,255,255,.3)">+</div><div class="code-badge">${c2}</div>`:''}<div><div class="code-combined">${c1}${c2||''}</div><div class="code-name-small">${t1.name}${t2?'형 + '+t2.name:''}형 | Holland 진로코드</div></div></div>`;
+}
+
+// ─── 모드 선택 ────────────────────────────────
+function selectMode(mode){
+  curMode=mode;
+  document.getElementById('mode-trn').classList.toggle('sel',mode==='tournament');
+  document.getElementById('mode-card').classList.toggle('sel',mode==='card');
+  document.getElementById('trn-wrap').style.display=mode==='tournament'?'block':'none';
+  document.getElementById('card-wrap').style.display=mode==='card'?'block':'none';
+}
+
+// ─── 토너먼트 ────────────────────────────────
+function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function startTrn(size){
+  trnSize=size;
+  trnHistory=[];
+  // size개 랜덤 선발 (30개 중)
+  trnPool=shuffle(JOBS).slice(0,Math.min(size,JOBS.length));
+  // 홀수면 짝수로
+  if(trnPool.length%2!==0)trnPool.pop();
+  trnWinners=[];
+  trnMatchIdx=0;
+  trnTotal=Math.floor(trnPool.length/2);
+  document.getElementById('trn-size-select').style.display='none';
+  document.getElementById('trn-game').style.display='block';
+  document.getElementById('trn-final').style.display='none';
+  renderTrnMatch();
+}
+
+function getRoundName(remaining){
+  if(remaining===2)return '결승 🏆';
+  if(remaining===4)return '4강 준결승';
+  if(remaining===8)return '8강';
+  if(remaining===16)return '16강';
+  if(remaining===32)return '32강';
+  return remaining+'강';
+}
+
+function renderTrnMatch(){
+  const total=trnPool.length;
+  const roundName=getRoundName(total);
+  document.getElementById('trn-round-lbl').textContent=`⚔️ ${roundName} (${trnMatchIdx+1}/${trnTotal})`;
+  document.getElementById('trn-count-lbl').textContent=`총 ${trnHistory.length}번 선택함`;
+
+  // 진행 도트
+  const dots=document.getElementById('trn-progress');
+  dots.innerHTML=Array(trnTotal).fill(0).map((_,i)=>
+    `<div class="trn-dot ${i<trnMatchIdx?'done':i===trnMatchIdx?'cur':''}"></div>`
+  ).join('');
+
+  const j1=trnPool[trnMatchIdx*2],j2=trnPool[trnMatchIdx*2+1];
+  const mc=getMatch2(j1),mc2=getMatch2(j2);
+
+  document.getElementById('trn-vs-area').innerHTML=`
+    <div class="trn-card" onclick="pickTrn(0)">
+      <span class="trn-emoji">${j1.emoji}</span>
+      <div class="trn-name">${j1.name}</div>
+      <div class="trn-type">${TYPE_INFO[j1.type].name}형 (${j1.type})${mc?' · '+mc:''}</div>
+      <div class="trn-desc">${j1.desc}</div>
+    </div>
+    <div class="trn-divider"><div class="trn-vs-badge">VS</div></div>
+    <div class="trn-card" onclick="pickTrn(1)">
+      <span class="trn-emoji">${j2.emoji}</span>
+      <div class="trn-name">${j2.name}</div>
+      <div class="trn-type">${TYPE_INFO[j2.type].name}형 (${j2.type})${mc2?' · '+mc2:''}</div>
+      <div class="trn-desc">${j2.desc}</div>
+    </div>`;
+
+  // 히스토리
+  if(trnHistory.length>0){
+    document.getElementById('trn-hist-wrap').style.display='block';
+    document.getElementById('trn-hist-chips').innerHTML=trnHistory.map(h=>`<span class="trn-hist-chip win">${h.winner.emoji} ${h.winner.name}</span>`).join('');
+  }
+}
+
+function getMatch2(job){
+  const c1=document.getElementById('inp-c1')?.value.trim().toUpperCase();
+  const c2=document.getElementById('inp-c2')?.value.trim().toUpperCase();
+  if(!c1)return'';
+  return job.type===c1?'✨ 코드 일치':job.type===c2?'🔵 부분 일치':'';
+}
+
+function pickTrn(idx){
+  const j1=trnPool[trnMatchIdx*2],j2=trnPool[trnMatchIdx*2+1];
+  const winner=idx===0?j1:j2,loser=idx===0?j2:j1;
+  // 클릭 애니메이션
+  const cards=document.querySelectorAll('.trn-card');
+  cards[idx].classList.add('winner');
+  setTimeout(()=>advanceTrn(winner,loser),350);
+}
+
+function skipTrn(){
+  const j1=trnPool[trnMatchIdx*2],j2=trnPool[trnMatchIdx*2+1];
+  const winner=Math.random()<0.5?j1:j2,loser=winner===j1?j2:j1;
+  advanceTrn(winner,loser);
+}
+
+function advanceTrn(winner,loser){
+  trnHistory.push({winner,loser});
+  trnWinners.push(winner);
+  trnMatchIdx++;
+  if(trnMatchIdx>=trnTotal){
+    // 라운드 종료
+    if(trnWinners.length===1){
+      showTrnFinal(trnWinners[0]);
+    } else {
+      trnPool=trnWinners;
+      trnWinners=[];
+      trnMatchIdx=0;
+      trnTotal=Math.floor(trnPool.length/2);
+    }
+  }
+  renderTrnMatch();
+}
+
+function showTrnFinal(champion){
+  document.getElementById('trn-game').style.display='none';
+  document.getElementById('trn-final').style.display='block';
+  // 우승자 카드
+  document.getElementById('trn-result-card').innerHTML=`
+    <span class="trn-winner-emoji">${champion.emoji}</span>
+    <div class="trn-winner-title">🏆 나의 AI 시대 최애 직업!</div>
+    <div class="trn-winner-name">${champion.name}</div>
+    <div class="trn-winner-type">${TYPE_INFO[champion.type].name}형 (${champion.type}) · AI협업도 ${champion.ai}%</div>
+    <div class="trn-winner-story">${champion.story}</div>`;
+  // 전체 기록
+  document.getElementById('trn-all-chips').innerHTML=trnHistory.map((h,i)=>{
+    const rd=trnHistory.length-i;
+    return`<span class="trn-hist-chip win">${h.winner.emoji} ${h.winner.name}</span>`;
+  }).join('');
+  // 관심 직업에 자동 추가
+  starJobs.add(champion.id);
+  updateStarSum();renderRoadmap();syncCard();
+  document.getElementById('star-sum').classList.add('show');
+  document.getElementById('star-chips').innerHTML=[...starJobs].map(id=>{const j=JOBS.find(jj=>jj.id===id);return j?`<span class="s-chip">${j.emoji} ${j.name}</span>`:''}).join('');
+}
+
+function resetTrn(){
+  document.getElementById('trn-game').style.display='none';
+  document.getElementById('trn-final').style.display='none';
+  document.getElementById('trn-size-select').style.display='block';
+}
+
+// ─── 카드 탐색 ───────────────────────────────
+function renderFilterBar(){
+  const types=['전체','R 현실형','I 탐구형','A 예술형','S 사회형','E 진취형','C 관습형'];
+  document.getElementById('filter-bar').innerHTML=types.map(t=>`<button class="f-btn ${curFilter===t?'on':''}" onclick="setFilter('${t}')">${t}</button>`).join('');
+}
+function setFilter(f){curFilter=f;renderFilterBar();renderJobCards();}
+function getMatch(job){const c1=document.getElementById('inp-c1')?.value.trim().toUpperCase(),c2=document.getElementById('inp-c2')?.value.trim().toUpperCase();if(!c1)return 0;return job.type===c1?100:job.type===c2?70:0;}
+function updateMatchBadges(){JOBS.forEach(j=>{const el=document.getElementById('jm-'+j.id);if(!el)return;const sc=getMatch(j);el.textContent=sc===100?'✨ 일치':sc===70?'🔵 부분':'';el.classList.toggle('show',sc>0);});}
+function renderJobCards(){
+  document.getElementById('job-grid').innerHTML=JOBS.map(j=>{
+    const hide=curFilter!=='전체'&&!curFilter.startsWith(j.type);
+    const sc=getMatch(j);
+    return`<div class="job-item ${starJobs.has(j.id)?'starred':''} ${openJob===j.id?'open':''} ${hide?'hidden':''}" id="ji-${j.id}">
+      <div class="job-head" onclick="tapJob('${j.id}')">
+        <span class="job-emoji">${j.emoji}</span>
+        <div class="job-info"><div class="job-name">${j.name}</div><div class="job-type">${TYPE_INFO[j.type].name}형 (${j.type}) · ${j.desc}</div></div>
+        <span class="match-chip ${sc>0?'show':''}" id="jm-${j.id}">${sc===100?'✨ 일치':sc===70?'🔵 부분':''}</span>
+        <span class="job-arrow">▼</span>
+      </div>
+      <div class="job-body">
+        <div class="job-story">${j.story}</div>
+        <div class="ai-bar"><span class="ai-lbl">AI협업도</span><div class="ai-track"><div class="ai-fill" style="width:${j.ai}%"></div></div><span class="ai-pct">${j.ai}%</span></div>
+        <div style="font-size:11px;font-weight:700;color:var(--navy2);margin-bottom:5px">핵심 역량</div>
+        <div class="skill-tags">${j.skills.map(sk=>`<span class="skill-tag">${sk}</span>`).join('')}</div>
+        <button class="star-btn ${starJobs.has(j.id)?'on':''}" onclick="tapStar('${j.id}')">${starJobs.has(j.id)?'⭐ 관심 직업 선택됨 (다시 누르면 해제)':'☆ 관심 직업으로 선택하기'}</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function tapJob(id){openJob=openJob===id?null:id;renderJobCards();if(openJob)setTimeout(()=>document.getElementById('ji-'+id)?.scrollIntoView({behavior:'smooth',block:'nearest'}),100);}
+function tapStar(id){starJobs.has(id)?starJobs.delete(id):starJobs.add(id);renderJobCards();updateStarSum();renderRoadmap();syncCard();}
+function updateStarSum(){const box=document.getElementById('star-sum');if(!starJobs.size){box.classList.remove('show');return;}box.classList.add('show');document.getElementById('star-chips').innerHTML=[...starJobs].map(id=>{const j=JOBS.find(jj=>jj.id===id);return j?`<span class="s-chip">${j.emoji} ${j.name}</span>`:''}).join('');}
+
+// ─── 가치관 ──────────────────────────────────
+function renderValues(){
+  document.getElementById('value-grid').innerHTML=VALUES.map(v=>{const ri=selValues.indexOf(v.id),rankCls=ri===0?'rank1':ri===1?'rank2':ri===2?'rank3':'',rankColor=ri===0?'var(--gold)':ri===1?'var(--navy2)':'var(--sky)';return`<div class="val-card ${selValues.includes(v.id)?'sel':''} ${rankCls}" onclick="tapVal('${v.id}')"><span class="val-emoji">${v.emoji}</span><div class="val-name">${v.name}</div><div class="val-hint">${v.hint}</div>${ri>=0?`<span class="rank-badge" style="background:${rankColor}">${ri+1}순위</span>`:''}</div>`;}).join('');
+  updateMatchResult();
+}
+function tapVal(id){const idx=selValues.indexOf(id);if(idx>=0)selValues.splice(idx,1);else{if(selValues.length>=3)selValues.shift();selValues.push(id);}renderValues();syncCard();}
+function updateMatchResult(){
+  const box=document.getElementById('match-result');if(!selValues.length){box.classList.remove('show');return;}
+  const scored=JOBS.map(j=>{const o=j.values.filter(v=>selValues.includes(v)).length;return{...j,score:Math.round(o/Math.max(selValues.length,j.values.length)*100)};}).sort((a,b)=>b.score-a.score).slice(0,5);
+  document.getElementById('match-list').innerHTML=scored.map((j,i)=>`<div class="match-row"><span class="match-rank">${i+1}</span><span style="font-size:16px">${j.emoji}</span><span class="match-name">${j.name}</span><div class="match-bar-track"><div class="match-bar-fill" style="width:${j.score}%"></div></div><span class="match-pct">${j.score}%</span></div>`).join('');
+  box.classList.add('show');
+}
+
+// ─── 로드맵 ──────────────────────────────────
+function renderRoadmap(){
+  const wrap=document.getElementById('roadmap-wrap');
+  const stars=[...starJobs].map(id=>JOBS.find(j=>j.id===id)).filter(Boolean);
+  if(!stars.length){wrap.innerHTML='<div class="card" style="text-align:center;color:var(--light);padding:32px">STEP ②에서 관심 직업을 선택하면<br>로드맵이 여기에 나타나요!</div>';return;}
+  wrap.innerHTML=stars.map(j=>`<div class="roadmap-card"><div class="rm-header"><span class="rm-emoji">${j.emoji}</span><div><div class="rm-title">${j.name}</div><div class="rm-type">${TYPE_INFO[j.type].name}형 (${j.type}) · AI 협업도 ${j.ai}%</div></div></div><div class="rm-body"><div class="rm-row"><span class="rm-label">필요 역량</span><span class="rm-text">${j.roadmap.need}</span></div><div class="rm-row"><span class="rm-label">지금 준비</span><span class="rm-text">${j.roadmap.prepare}</span></div><div class="rm-row"><span class="rm-label">추천 전공</span><span class="rm-text">${j.roadmap.major}</span></div><div class="rm-row"><span class="rm-label">전망</span><span class="rm-text">${j.roadmap.outlook}</span></div></div></div>`).join('');
+}
+
+// ─── 진로 카드 ───────────────────────────────
+function syncCard(){
+  const name=document.getElementById('inp-name')?.value.trim()||'나의 이름';
+  const c1=document.getElementById('inp-c1')?.value.trim().toUpperCase()||'';
+  const c2=document.getElementById('inp-c2')?.value.trim().toUpperCase()||'';
+  const t1=TYPE_INFO[c1],t2=TYPE_INFO[c2];
+  document.getElementById('cc-name').textContent=name;
+  document.getElementById('cc-code').textContent=`진로코드: ${c1}${c2}${t1?` (${t1.name}${t2?'·'+t2.name:''}형)`:''}`;
+  document.getElementById('cc-jobs').innerHTML=starJobs.size?[...starJobs].map(id=>{const j=JOBS.find(jj=>jj.id===id);return j?`<span class="cc-chip">${j.emoji} ${j.name}</span>`:''}).join(''):'<span class="cc-chip">직업 선택 중...</span>';
+  document.getElementById('cc-vals').innerHTML=selValues.length?selValues.map((id,i)=>{const v=VALUES.find(vv=>vv.id===id);return v?`<span class="cc-chip">${['1위','2위','3위'][i]} ${v.emoji} ${v.name}</span>`:''}).join(''):'<span class="cc-chip">가치관 선택 중...</span>';
+  if(t1)document.getElementById('cc-quote').textContent=`"${t1.name}형(${c1}) 강점을 살려 AI 시대의 새로운 직업 세계를 탐색합니다."`;
+  const now=new Date();document.getElementById('cc-footer').textContent=`탐색일: ${now.getFullYear()}년 ${now.getMonth()+1}월 ${now.getDate()}일 | AI 커리어 큐레이션`;
+  // 학생부 초안
+  const rec=document.getElementById('record-preview');
+  if(!t1){rec.textContent='진로코드를 입력하면 초안이 생성됩니다.';return;}
+  const jobList=[...starJobs].map(id=>JOBS.find(j=>j.id===id)?.name).filter(Boolean);
+  const valList=selValues.map(id=>VALUES.find(v=>v.id===id)?.name).filter(Boolean);
+  const dec=DECISIONS.find(d=>d.id===selDec);
+  const highMat=MATURITY.filter(m=>matVals[m.id]>=60).map(m=>m.name);
+  let txt=`STEAM 진로탐색검사(카이로스심리검사연구소) 해석 수업 및 AI 커리어 큐레이션(3-4교시)에 참여하여 Holland 진로코드 ${c1}${c2}형(${t1.name}${t2?'·'+t2.name:''})을 확인함.`;
+  if(highMat.length)txt+=` 진로 성숙도에서 ${highMat.join(', ')} 영역이 평균 이상으로 나타남.`;
+  if(dec)txt+=` 진로의사 결정 유형은 '${dec.name}'으로 파악됨.`;
+  if(valList.length)txt+=` 직업 가치관으로 ${valList.join(', ')}을(를) 우선시함.`;
+  if(jobList.length)txt+=` AI 시대 유망 직업 탐색에서 ${jobList.join(', ')} 직업에 관심을 보이며 필요 역량과 진로 로드맵을 탐색함.`;
+  rec.textContent=txt;
+}
+
+// ─── 스텝 이동 ───────────────────────────────
+function go(n){
+  document.querySelectorAll('.sec').forEach((s,i)=>s.classList.toggle('on',i===n));
+  document.querySelectorAll('.tab').forEach((t,i)=>{t.classList.remove('active','done');if(i===n)t.classList.add('active');else if(i<n)t.classList.add('done');});
+  document.getElementById('hd-step').textContent=`STEP ${n+1} / 5`;
+  if(n===4)syncCard();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ─── 초기화 ──────────────────────────────────
+renderRiasecGrid();renderMatGrid();renderDecisions();
+renderFilterBar();renderJobCards();renderValues();
+</script>
+</body>
+</html>
